@@ -4,7 +4,7 @@ import os
 import urllib.request
 import time
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal 
 import re
 
 rekognition = boto3.client('rekognition')
