@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         extracted_text = extract_text_from_pdf_s3(bucket_name, resume_file)
 
         if not extracted_text or len(extracted_text) < 200:
-            print("⚠️ Warning: Extracted text is too small. Resume may be image-based or poorly scanned.")
+            print("Warning: Extracted text is too small. Resume may be image-based or poorly scanned.")
 
         # Analyze skills and score
         skills = analyze_resume_text(extracted_text)
