@@ -149,3 +149,4 @@ def store_in_dynamodb(resume_file, score, skills, project_flag, internship_flag,
             'CertificationsCount': cert_count
         }
     )
+
