@@ -34,32 +34,35 @@ This document provides an overview of the project, setup instructions, and detai
 ---
 ## Folder Structure
 
-hirefusion/
-│
-├── backend/                           # Backend Lambda functions and resources
-│   ├── resume_analyzer/               # Lambda function for Resume Analysis
-│   │   ├── | [lambda_function.py](./lambda_function.py) |         # Main Python file for resume analysis logic
-│   │   └── test/                      # Test files for resume analyzer Lambda
-│   │       ├── test_resume_lambda.py  # Unit tests for the resume Lambda function
-│
-│   ├── interview_grader/              # Lambda function for Interview Video Grading
-│   │   ├── | [lambda_function.py](./lambda_function.py) |         # Main Python file for interview video grading logic
-│   │   └── test/                      # Test files for video grading Lambda
-│   │       ├── test_video_lambda.py   # Unit tests for video grading Lambda
-│
-│   ├── app.py                         # Entry point for local testing / API integration
-│
-├── frontend/                          # Frontend files for the website
-│   ├── | [lambda_function.py](./lambda_function.py) |                     # Main HTML file for the landing page
-│   ├── | [lambda_function.py](./lambda_function.py) |                      # HTML page for login, signup
-│   ├── | [lambda_function.py](./lambda_function.py) |                 # User dashboard page
-│   ├── | [lambda_function.py](./lambda_function.py) |          # Page for video grading
-│   ├── | [lambda_function.py](./lambda_function.py) |           # Page for resume analysis
-│
-├── docs/                              # Project documentation
-│   ├── | [lambda_function.py](./lambda_function.py) |       # Project documentation pdf
-│   ├── | [lambda_function.py](./lambda_function.py) |                 # Flowchart depicting the system
-│   └── | [lambda_function.py](./lambda_function.py) |                     # Project documentation and setup instructions
+### Backend
+- **backend/**
+  - **resume_analyzer/**
+    - | [Lambda_function_for_resume_analysis.py](./resume_analyzer_lambda_website_integrated.py) | – Main Python file for resume analysis logic  
+    - `test/`
+      - `test_resume_lambda.py` – Unit tests for resume analyzer Lambda  
+  - **interview_grader/**
+    - | [video_resume_analyzer_lambda_1.py](./video_resume_lambda_1_website_integrated.py) | – Main Python file for interview video grading logic  
+    - `test/`
+      - `test_video_lambda_1.py` – Unit tests for video grading Lambda
+    - | [video_resume_analyzer_lambda_2.py](./video_resume_lambda_2_website_integrated.py) | – Main Python file for interview video grading logic  
+      - `test/`
+        - `test_video_lambda_2.py` – Unit tests for video grading Lambda
+  - | [app.py](./app.py) | – Entry point for local testing / API integration  
+
+### Frontend
+- **frontend/**
+  - | [index.html](./index.html) | – Landing page  
+  - | [ind.html](./ind.html) | – Login, Signup page 
+  - | [dashboard.html](./dashboard.html) | – User dashboard  
+  - | [resume-analyzer.html](./resume-analyzer.html) | – Resume analysis interface  
+  - | [interview-grader.html](./interview-grader.html) | – Video grading interface
+
+### Documentation
+- **docs/**  
+  - | [flow_chart.jpg](./flow_chart.jpg) | – Flowchart of the system  
+  - | [HireFusionAI_documentation.pdf](./HireFusionAI_documentation.pdf) | – Detailed project documentation  
+
+- | [README.md](./README.md) | – Project description and usage guide  
 
 ## AWS Architecture and Services Used
 
