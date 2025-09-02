@@ -62,7 +62,9 @@ This document provides an overview of the project, setup instructions, and detai
   - | [flow_chart.jpg](./flow_chart.jpg) | – Flowchart of the system  
   - | [HireFusionAI_documentation.pdf](./HireFusionAI_documentation.pdf) | – Detailed project documentation  
 
-- | [README.md](./README.md) | – Project description and usage guide  
+- | [README.md](./README.md) | – Project description and usage guide
+
+---
 
 ## AWS Architecture and Services Used
 
