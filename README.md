@@ -32,6 +32,34 @@ This document provides an overview of the project, setup instructions, and detai
   - Store results in **Amazon DynamoDB**.
 
 ---
+## Folder Structure
+
+hirefusion/
+│
+├── backend/                           # Backend Lambda functions and resources
+│   ├── resume_analyzer/               # Lambda function for Resume Analysis
+│   │   ├── | [lambda_function.py](./lambda_function.py) |         # Main Python file for resume analysis logic
+│   │   └── test/                      # Test files for resume analyzer Lambda
+│   │       ├── test_resume_lambda.py  # Unit tests for the resume Lambda function
+│
+│   ├── interview_grader/              # Lambda function for Interview Video Grading
+│   │   ├── | [lambda_function.py](./lambda_function.py) |         # Main Python file for interview video grading logic
+│   │   └── test/                      # Test files for video grading Lambda
+│   │       ├── test_video_lambda.py   # Unit tests for video grading Lambda
+│
+│   ├── app.py                         # Entry point for local testing / API integration
+│
+├── frontend/                          # Frontend files for the website
+│   ├── | [lambda_function.py](./lambda_function.py) |                     # Main HTML file for the landing page
+│   ├── | [lambda_function.py](./lambda_function.py) |                      # HTML page for login, signup
+│   ├── | [lambda_function.py](./lambda_function.py) |                 # User dashboard page
+│   ├── | [lambda_function.py](./lambda_function.py) |          # Page for video grading
+│   ├── | [lambda_function.py](./lambda_function.py) |           # Page for resume analysis
+│
+├── docs/                              # Project documentation
+│   ├── | [lambda_function.py](./lambda_function.py) |       # Project documentation pdf
+│   ├── | [lambda_function.py](./lambda_function.py) |                 # Flowchart depicting the system
+│   └── | [lambda_function.py](./lambda_function.py) |                     # Project documentation and setup instructions
 
 ## AWS Architecture and Services Used
 
