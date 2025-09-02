@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireFusion – Interview Grader</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    header {
+      padding: 1rem 2rem;
+      background: #0f2027;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { font-size: 1.8rem; font-weight: bold; color: #4DB8FF; }
+    .back-btn {
+      background: #4DB8FF;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      text-align: center;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 1rem auto;
+      color: white;
+    }
+    .upload-btn {
+      background: linear-gradient(to right, #4DB8FF, #1e90ff);
+      color: white;
+      padding: 0.7rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    .result-box {
+      margin-top: 2rem;
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: left;
+      display: none;
+    }
+    .result-box h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #4DB8FF;
+    }
+    .result-box p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Interview Grader</div>
+    <button class="back-btn" onclick="window.location.href='dashboard.html'"><i class="fa fa-arrow-left"></i> Back</button>
+  </header>
+
+  <main>
+    <h2>Upload your Interview Video for Grading</h2>
+    <input type="file" id="videoUpload" accept="video/*" />
+    <button class="upload-btn" onclick="gradeInterview()">Grade Interview</button>
+
+    <div class="result-box" id="resultBox">
+      <h3>Interview Results</h3>
+      <p><strong>Resume Score:</strong> <span id="resumeScore">--%</span></p>
+      <p><strong>Skills:</strong> <span id="skills">--</span></p>
+      <p><strong>Transcript:</strong></p>
+      <p id="transcript">--</p>
+      <hr>
+      <h3>Detailed Scores</h3>
+      <div id="scores"></div>
+      <p><strong>Total Score:</strong> <span id="totalScore">--%</span></p>
+      <p><strong>Status:</strong> <span id="status">--</span></p>
+      <p><strong>Timestamp:</strong> <span id="timestamp">--</span></p>
+    </div>
+  </main>
+
+<script>
+  async function gradeInterview() {
+    const fileInput = document.getElementById("videoUpload");
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("❗ Please choose a video file first.");
+      return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.email) {
+      alert("⚠️ User not logged in.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    try {
+      const res = await fetch(`http://13.221.21.202:5000/api/upload_video?email=${encodeURIComponent(user.email)}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // ✅ Populate real response data
+        document.getElementById("resumeScore").innerText = data.resume_score + "%";
+        document.getElementById("skills").innerText = data.skills?.join(", ") || "N/A";
+        document.getElementById("transcript").innerText = data.transcript || "No transcript available";
+
+        // Detailed scores
+        let scoresHtml = "";
+        if (data.scores) {
+          for (const [key, value] of Object.entries(data.scores)) {
+            scoresHtml += `<p><strong>${key}:</strong> ${value}</p>`;
+          }
+        }
+        document.getElementById("scores").innerHTML = scoresHtml;
+
+        document.getElementById("totalScore").innerText = data.total_score + "%";
+        document.getElementById("status").innerText = data.status;
+        document.getElementById("timestamp").innerText = data.timestamp;
+
+        document.getElementById("resultBox").style.display = "block";
+        alert("✅ Interview video uploaded successfully!");
+      } else {
+        alert("❌ Upload failed: " + data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("🚫 An error occurred during upload.");
+    }
+  }
+</script>
+
+</body>
+</html>

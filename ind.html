@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HireFusion – Login/Signup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    /* ✅ Your same CSS - unchanged */
+    :root {
+      --bg: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      --accent: #4DB8FF;
+      --input-bg: #f2f2f2;
+      --card-bg: rgba(255, 255, 255, 0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body {
+      background: var(--bg); color: #fff; display: flex; flex-direction: column;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    header {
+      background: #0f2027; padding: 1rem 2rem 0.5rem;
+      text-align: left;
+    }
+    .brand {
+      font-size: 2rem; color: var(--accent); font-weight: bold; margin-bottom: 0.5rem;
+    }
+    nav.menu-bar {
+      display: flex; justify-content: flex-start; flex-wrap: wrap;
+      gap: 1rem; background: #1c1c1c; padding: 0.75rem 1rem;
+    }
+    nav.menu-bar button {
+      background: none; border: none; color: white;
+      font-size: 1rem; cursor: pointer; padding: 0.5rem 1rem;
+      border-radius: 5px; transition: background 0.3s;
+    }
+    nav.menu-bar button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    main {
+      flex: 1; display: flex; flex-direction: column; align-items: center; padding: 2rem;
+    }
+    .auth-container {
+      background: var(--card-bg); padding: 2rem;
+      border-radius: 1rem; max-width: 400px; width: 100%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); text-align: center;
+    }
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+    .form-group { margin-bottom: 1rem; text-align: left; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+      border: none; background: var(--input-bg); color: #000; font-size: 1rem;
+    }
+    .auth-btn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(to right, #4DB8FF, #1e90ff);
+      color: white; border: none; border-radius: 0.6rem;
+      font-size: 1.05rem; font-weight: 600; cursor: pointer;
+    }
+    .switch-auth-link { font-size: 0.875rem; margin-top: 0.75rem; }
+    .password-requirements {
+      font-size: 0.75rem; color: #ddd; text-align: left; padding-left: 0.5rem;
+    }
+    .password-requirements li {
+      list-style: none; margin-bottom: 0.1rem; color: #ffcccc;
+    }
+    .password-requirements li.valid { color: #a0ffc0; }
+    .social-login {
+      margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .social-btn {
+      width: 100%; padding: 0.75rem;
+      border: none; border-radius: 0.5rem;
+      font-size: 1rem; display: flex;
+      align-items: center; justify-content: center; gap: 0.5rem;
+      cursor: pointer; transition: background 0.3s;
+    }
+    .social-btn img { width: 20px; height: 20px; }
+    .google { background: var(--input-bg); color: #000; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+    .google:hover { background: #e8e8e8; }
+    .linkedin { background: #0077B5; color: white; }
+    .linkedin:hover { background: #005b8c; }
+    .github { background: #333; color: white; }
+    .github:hover { background: #222; }
+    .columns {
+      display: flex; justify-content: flex-start;
+      gap: 1rem; margin-top: 2rem;
+      max-width: 1200px; width: 100%;
+      padding: 0 1rem; flex-wrap: wrap;
+    }
+    .column-box {
+      background: var(--card-bg); flex: 1;
+      padding: 1rem; border-radius: 0.75rem; text-align: left;
+      border: 1px solid rgba(255,255,255,0.2); min-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">HireFusion</div>
+    <nav class="menu-bar">
+     <nav style="background-color: #111827; padding: 1.2rem 2rem; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+  <span style="color: #F9FAFB; font-size: 1.2rem; font-family: 'Segoe UI', sans-serif; font-weight: 500; letter-spacing: 0.5px;">Empowering you with AI-driven insights to refine every resume and interview.</span>
+</nav>
+    </nav>
+  </header>
+
+  <main>
+    <!-- LOGIN -->
+    <section class="auth-container form-section active" id="loginSection">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group"><input type="email" id="loginEmail" placeholder="Email" required /></div>
+        <div class="form-group"><input type="password" id="loginPassword" placeholder="Password" required /></div>
+        <button type="submit" class="auth-btn">Login</button>
+        <p class="switch-auth-link">Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
+      </form>
+      <div class="social-login">
+        <button class="social-btn google" onclick="googleLogin()"><img src="https://img.icons8.com/color/48/google-logo.png"/> Continue with Google</button>
+        <button class="social-btn linkedin" onclick="linkedinLogin()"><img src="https://img.icons8.com/color/48/linkedin.png"/> Continue with LinkedIn</button>
+        <button class="social-btn github" onclick="githubLogin()"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/github.png"/> Continue with GitHub</button>
+      </div>
+    </section>
+
+    <!-- SIGN UP -->
+    <section class="auth-container form-section" id="signupSection">
+      <h2>Sign Up</h2>
+      <form id="signupForm">
+        <div class="form-group"><input type="text" id="fullName" placeholder="Full Name" required /></div>
+        <div class="form-group"><input type="text" id="username" placeholder="Username" required /></div>
+        <div class="form-group"><input type="date" id="dateOfBirth" required /></div>
+        <div class="form-group"><input type="tel" id="phone" placeholder="Phone Number" required /></div>
+        <div class="form-group">
+          <select id="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="rather_not_say">Rather not say</option>
+          </select>
+        </div>
+        <div class="form-group"><input type="email" id="email" placeholder="Email" required /></div>
+        <div class="form-group">
+          <input type="password" id="signupPassword" placeholder="Password" required />
+          <ul class="password-requirements">
+            <li id="minChars">Minimum 8 characters</li>
+            <li id="hasCapital">At least one capital letter</li>
+            <li id="hasSymbol">At least one special character (e.g. !@#$%)</li>
+          </ul>
+        </div>
+        <div class="form-group"><input type="password" id="confirmPassword" placeholder="Confirm Password" required /></div>
+        <button type="submit" class="auth-btn">Sign Up</button>
+        <p class="switch-auth-link">Already have an account? <a href="#" id="showLogin">Login</a></p>
+      </form>
+      <div class="social-login">
+        <button class="social-btn google" onclick="googleLogin()"><img src="https://img.icons8.com/color/48/google-logo.png"/> Continue with Google</button>
+        <button class="social-btn linkedin" onclick="linkedinLogin()"><img src="https://img.icons8.com/color/48/linkedin.png"/> Continue with LinkedIn</button>
+        <button class="social-btn github" onclick="githubLogin()"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/github.png"/> Continue with GitHub</button>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <div class="columns">
+      <div class="column-box"><h3>Smart Resume Parsing</h3><p>Our AI reads resumes like a recruiter.</p></div>
+      <div class="column-box"><h3>Confidence Starts Here</h3><p>Upload your resume or interview and let AI guide you to success.</p></div>
+      <div class="column-box"><h3>Secure & Private</h3><p>Your data stays safe with end-to-end encryption.</p></div>
+    </div>
+  </main>
+
+  <script>
+    const apiBase = "http://localhost:5000"; // backend URL
+
+    function showMessage(label) { alert("🚀 You clicked on: " + label); }
+    window.googleLogin = () => alert("🔐 Google OAuth flow triggered.");
+    window.linkedinLogin = () => alert("🔐 LinkedIn OAuth flow triggered.");
+    window.githubLogin = () => alert("🔐 GitHub OAuth flow triggered.");
+
+    const loginSection = document.getElementById("loginSection");
+    const signupSection = document.getElementById("signupSection");
+
+    document.getElementById("showSignup").addEventListener("click", (e) => {
+      e.preventDefault();
+      loginSection.classList.remove("active");
+      signupSection.classList.add("active");
+    });
+
+    document.getElementById("showLogin").addEventListener("click", (e) => {
+      e.preventDefault();
+      signupSection.classList.remove("active");
+      loginSection.classList.add("active");
+    });
+
+    // Password validation
+    const signupPassword = document.getElementById("signupPassword");
+    const minChars = document.getElementById("minChars");
+    const hasCapital = document.getElementById("hasCapital");
+    const hasSymbol = document.getElementById("hasSymbol");
+
+    signupPassword.addEventListener("input", () => {
+      const pw = signupPassword.value;
+      minChars.classList.toggle("valid", pw.length >= 8);
+      hasCapital.classList.toggle("valid", /[A-Z]/.test(pw));
+      hasSymbol.classList.toggle("valid", /[^A-Za-z0-9]/.test(pw));
+    });
+
+    // ✅ Signup API call
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const pw = signupPassword.value;
+      const pw2 = document.getElementById("confirmPassword").value;
+      if (pw !== pw2) return alert("❌ Passwords do not match!");
+      const userData = {
+            full_name: document.getElementById("fullName").value,
+            username: document.getElementById("username").value,
+            date_of_birth: document.getElementById("dateOfBirth").value,
+            phone: document.getElementById("phone").value,
+            gender: document.getElementById("gender").value,
+            email: document.getElementById("email").value,
+            password: pw
+    };
+
+      
+      const res = await fetch("http://13.221.21.202:5000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await res.json();
+     
+       if (res.ok) {
+        alert("✅ Signup successful!");
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("userEmail", email);
+        window.location.href = "/dashboard.html";
+       }
+
+       else {
+        alert("❌ " + (data.error || "Signup failed"));
+      }
+      
+    });
+
+    // ✅ Login API call
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+    
+      const res = await fetch("http://13.221.21.202:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+       
+       if (res.ok) {
+      alert("🔐 Login successful!");
+     localStorage.setItem("user", JSON.stringify(data.user));  
+     localStorage.setItem("userEmail", email);
+     window.location.href = "/dashboard.html";
+     }
+
+    
+       else {
+        alert(data.error || "Login Failed!");
+      }
+    });
+    // ✅ Toggle form visibility based on query param
+    const authType = new URLSearchParams(window.location.search).get("auth");
+    if (authType === "signup") {
+      loginSection.classList.remove("active");
+      signupSection.classList.add("active");
+    } else if (authType === "login") {
+      loginSection.classList.add("active");
+      signupSection.classList.remove("active");
+    }
+
+  </script>
+</body>
+</html>

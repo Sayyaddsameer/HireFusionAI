@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HireFusion</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    :root {
+      --accent: #4DB8FF;
+      --bg-dark: #0f2027;
+      --input-bg: #f2f2f2;
+      --card-bg: rgba(255, 255, 255, 0.06);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background: #0f2027;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-dark);
+      padding: 1.5rem 2rem;
+    }
+    .brand {
+      font-size: 2rem;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    .auth-buttons button {
+      background: var(--accent);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+    }
+    main {
+      flex: 1;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+    .intro {
+      text-align: center;
+      max-width: 800px;
+    }
+    .intro h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .reasons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .reason-box {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 250px;
+      text-align: center;
+    }
+    form {
+      background: #1c1c1c;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: var(--input-bg);
+    }
+    .auth-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+    }
+    .password-requirements {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: #ccc;
+    }
+    .switch-auth-link {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .switch-auth-link a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .social-login {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      justify-content: center;
+    }
+    .google {
+      background: #fff;
+      color: #000;
+    }
+    .linkedin {
+      background: #0077b5;
+      color: #fff;
+    }
+    .github {
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">HireFusion</div>
+    <div class="auth-buttons">
+      <button onclick="window.open('ind.html?auth=login', '_blank')"><h2>Login / Sign Up</h2></button>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <div class="intro" id="introSection">
+      <h1>Refine Your Career Path with AI</h1>
+      <p><h4>Empowering you with AI-driven insights to craft winning resumes and ace your interviews.</h4></p>
+    </div>
+    <section class="reasons" id="reasonsSection">
+      <div class="reason-box">
+        <h3>Smart Resume Parsing</h3>
+        <p>Our AI reads resumes like a recruiter.</p>
+      </div>
+      <div class="reason-box">
+        <h3>Confidence Starts Here</h3>
+        <p>Upload your resume or interview and let AI guide you to success.</p>
+      </div>
+      <div class="reason-box">
+        <h3>Secure & Private</h3>
+        <p>Your data stays safe with end-to-end encryption.</p>
+      </div>
+    </section>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" style="display: none;">
+      <div class="form-group"><input type="email" id="loginEmail" placeholder="Email" required /></div>
+      <div class="form-group"><input type="password" id="loginPassword" placeholder="Password" required /></div>
+      <button type="submit" class="auth-btn">Login</button>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" style="display: none;">
+      <div class="form-group"><input type="text" id="fullName" placeholder="Full Name" required /></div>
+      <div class="form-group"><input type="text" id="username" placeholder="Username" required /></div>
+      <div class="form-group"><input type="date" id="dateOfBirth" required /></div>
+      <div class="form-group"><input type="tel" id="phone" placeholder="Phone Number" required /></div>
+      <div class="form-group">
+        <select id="gender" required>
+          <option value="" disabled selected>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="rather_not_say">Rather not say</option>
+        </select>
+      </div>
+      <div class="form-group"><input type="email" id="email" placeholder="Email" required /></div>
+      <div class="form-group">
+        <input type="password" id="signupPassword" placeholder="Password" required />
+        <ul class="password-requirements">
+          <li id="minChars">Minimum 8 characters</li>
+          <li id="hasCapital">At least one capital letter</li>
+          <li id="hasSymbol">At least one special character (e.g. !@#$%)</li>
+        </ul>
+      </div>
+      <div class="form-group"><input type="password" id="confirmPassword" placeholder="Confirm Password" required /></div>
+      <button type="submit" class="auth-btn">Sign Up</button>
+
+      <div class="social-login">
+        <button class="social-btn google" onclick="googleLogin()"><img src="https://img.icons8.com/color/48/google-logo.png" height="20"/> Continue with Google</button>
+        <button class="social-btn linkedin" onclick="linkedinLogin()"><img src="https://img.icons8.com/color/48/linkedin.png" height="20"/> Continue with LinkedIn</button>
+        <button class="social-btn github" onclick="githubLogin()"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/github.png" height="20"/> Continue with GitHub</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const authType = getQueryParam('auth');
+
+    if (authType === 'login') {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('reasonsSection').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    } else if (authType === 'signup') {
+      document.getElementById('introSection').style.display = 'none';
+      document.getElementById('reasonsSection').style.display = 'none';
+      document.getElementById('signupForm').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

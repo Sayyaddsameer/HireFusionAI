@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireFusion – Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    header {
+      padding: 1rem 2rem;
+      background: #0f2027;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { font-size: 1.8rem; font-weight: bold; color: #4DB8FF; }
+    .logout-btn {
+      background: #ff4d4d; color: white;
+      border: none; padding: 0.6rem 1.2rem;
+      border-radius: 6px; cursor: pointer;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      text-align: center;
+    }
+    .user-details {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 1rem;
+      text-align: left;
+    }
+    .user-details p { margin: 5px 0; font-size: 1rem; }
+
+    .dashboard-stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.1);
+      padding: 1.2rem;
+      border-radius: 1rem;
+      min-width: 200px;
+      text-align: center;
+    }
+    .stat-card h3 {
+      font-size: 2rem;
+      margin: 0.5rem 0;
+    }
+
+    /* Buttons for Analyzer & Grader */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      background: linear-gradient(to right, #4DB8FF, #1e90ff);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      min-width: 220px;
+      transition: transform 0.2s ease;
+    }
+    .action-btn:hover { transform: scale(1.05); }
+
+    /* Chatbot Widget */
+    #chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      height: 400px;
+      background: white;
+      color: black;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    #chat-header {
+      background: #4DB8FF;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+    #chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+    .chat-msg { margin-bottom: 10px; }
+    .bot-msg { color: #203a43; }
+    .user-msg { color: #1e90ff; text-align: right; }
+    #chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    #chat-input input {
+      flex: 1;
+      border: none;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    #chat-input button {
+      background: #4DB8FF;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    #chatbot-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #4DB8FF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    // Fetch user details
+    fetch(`/api/user_details?email=${user.email}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) {
+          document.getElementById("userName").textContent = "Welcome, " + data.full_name;
+          document.getElementById("userEmail").textContent = data.email;
+          document.getElementById("userPhone").textContent = data.phone;
+        }
+      });
+
+    // Fetch dashboard stats
+    fetch(`/api/dashboard_stats?email=${user.email}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) {
+          document.getElementById("resumeCount").textContent = data.resumeCount;
+          document.getElementById("resumeAvgScore").textContent = data.resumeAvgScore + "%";
+          document.getElementById("videoCount").textContent = data.videoCount;
+          document.getElementById("videoAvgScore").textContent = data.videoAvgScore + "%";
+        }
+      });
+  });
+</script>
+
+
+  <header>
+    <div class="brand">HireFusion Dashboard</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <main>
+    <h2 id="userName" style="margin-bottom:1rem;">Loading...</h2>
+
+    <!-- User Details -->
+    <div class="user-details">
+      <p><strong>Email:</strong> <span id="userEmail">---</span></p>
+      <p><strong>Phone:</strong> <span id="userPhone">---</span></p>
+    </div>
+
+    <!-- Stats -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <p>No. of Video Interviews Uploaded</p>
+        <h3 id="videoCount">--</h3>
+      </div>
+      <div class="stat-card">
+        <p>Avg. Video Interview Score</p>
+        <h3 id="videoAvgScore">--%</h3>
+      </div>
+      <div class="stat-card">
+        <p>No. of Resume Documents Uploaded</p>
+        <h3 id="resumeCount">--</h3>
+      </div>
+      <div class="stat-card">
+        <p>Avg. Resume Score</p>
+        <h3 id="resumeAvgScore">--%</h3>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="action-btn" onclick="window.location.href='/resume-analyzer.html'">
+        <i class="fa fa-file-alt"></i> Resume Analyzer
+      </button>
+      <button class="action-btn" onclick="window.location.href='/interview-grader.html'">
+        <i class="fa fa-video"></i> Interview Grader
+      </button>
+    </div>
+  </main>
+
+  <!-- Chatbot -->
+  <button id="chatbot-toggle"><i class="fa fa-comment"></i></button>
+  <div id="chatbot-container">
+    <div id="chat-header">HireFusion Assistant</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+      <input type="text" id="userMessage" placeholder="Ask me anything..." />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</body>
+</html>

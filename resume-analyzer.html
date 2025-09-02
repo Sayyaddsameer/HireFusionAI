@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HireFusion – Resume Analyzer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    header {
+      padding: 1rem 2rem;
+      background: #0f2027;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { font-size: 1.8rem; font-weight: bold; color: #4DB8FF; }
+    .back-btn {
+      background: #4DB8FF;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      text-align: center;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 1rem auto;
+      color: white;
+    }
+    .upload-btn {
+      background: linear-gradient(to right, #4DB8FF, #1e90ff);
+      color: white;
+      padding: 0.7rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    .result-box {
+      margin-top: 2rem;
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      display: none;
+    }
+    .result-box h3 {
+      font-size: 2rem;
+      margin: 0;
+      color: #4DB8FF;
+    }
+    .spinner {
+  border: 6px solid rgba(255, 255, 255, 0.1);
+  border-top: 6px solid #4DB8FF;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Resume Analyzer</div>
+    <button class="back-btn" onclick="window.location.href='dashboard.html'"><i class="fa fa-arrow-left"></i> Back</button>
+  </header>
+
+  <main>
+    <h2>Upload Resume</h2>
+    <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" />
+    <button class="upload-btn" onclick="uploadResume()">Upload</button>
+    <div class="spinner" id="loadingSpinner"></div>
+
+    <div class="result-box" id="resultBox">
+      <h3>Resume Details</h3>
+      <div id="resumeDetails"></div>
+    </div>
+  </main>
+<script>
+  async function uploadResume() {
+  const fileInput = document.getElementById('resumeInput');
+  const spinner = document.getElementById('loadingSpinner');
+  const resultBox = document.getElementById('resultBox');
+  resultBox.style.display = "none"; // hide old result
+  spinner.style.display = "block";  // show spinner
+
+  if (!fileInput.files.length) {
+    spinner.style.display = "none";
+    return alert("Please select a file");
+  }
+
+  const file = fileInput.files[0];
+
+  try {
+    const presignedRes = await fetch("http://13.221.21.202:5000/generate_presigned_url", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: file.name, filetype: file.type })
+    });
+
+    if (!presignedRes.ok) {
+      const err = await presignedRes.json();
+      throw new Error("Backend Error: " + err.error);
+    }
+
+    const { url, key, resume_id } = await presignedRes.json();
+
+    const uploadRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file
+    });
+
+    if (!uploadRes.ok) {
+      console.error("Upload failed:", await uploadRes.text());
+      alert("Upload failed");
+      spinner.style.display = "none";
+      return;
+    }
+
+    alert("✅ Upload successful!");
+    console.log("Polling for Resume ID:", resume_id);
+
+    try {
+     const analysisData = await waitForResumeDetails(resume_id); // WAIT until data is ready
+    displayResumeDetails(analysisData);
+
+    } catch (pollErr) {
+      alert(pollErr.message);
+    }
+
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Upload failed: " + err.message);
+  } finally {
+    spinner.style.display = "none";
+  }
+}
+
+async function waitForResumeDetails(resumeId, retries = 20, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    const res = await fetch(`http://13.221.21.202:5000/resume_data?resume_id=${resumeId}`);
+    const data = await res.json();
+
+    if (res.ok && !data.error) {
+      return data;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  throw new Error("Resume analysis not available yet. Try again later.");
+}
+
+function showResumeDetails(data) {
+  const box = document.getElementById("resultBox");
+  const details = document.getElementById("resumeDetails");
+
+  details.innerHTML = `
+    <p><strong>ResumeID:</strong> ${data.ResumeID || "N/A"}</p>
+    <p><strong>Certifications Count:</strong> ${data.CertificationsCount ?? "N/A"}</p>
+    <p><strong>Internship Detected:</strong> ${data.InternshipDetected ? 'Yes' : 'No'}</p>
+    <p><strong>Internship Type:</strong> ${data.InternshipType || "N/A"}</p>
+    <p><strong>Project Detected:</strong> ${data.ProjectDetected ? 'Yes' : 'No'}</p>
+    <p><strong>Resume File:</strong> ${data.ResumeFile || "N/A"}</p>
+    <p><strong>Score:</strong> ${data.Score ?? "N/A"}</p>
+    <p><strong>Skills:</strong> ${Array.isArray(data.Skills) ? data.Skills.join(', ') : data.Skills || "N/A"}</p>
+  `;
+
+  box.style.display = "block";
+}
+</script>
+</body>
+</html>
