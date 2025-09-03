@@ -122,26 +122,15 @@
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Populate real response data
-        document.getElementById("resumeScore").innerText = data.resume_score + "%";
-        document.getElementById("skills").innerText = data.skills?.join(", ") || "N/A";
-        document.getElementById("transcript").innerText = data.transcript || "No transcript available";
-
-        // Detailed scores
-        let scoresHtml = "";
-        if (data.scores) {
-          for (const [key, value] of Object.entries(data.scores)) {
-            scoresHtml += `<p><strong>${key}:</strong> ${value}</p>`;
-          }
-        }
-        document.getElementById("scores").innerHTML = scoresHtml;
-
-        document.getElementById("totalScore").innerText = data.total_score + "%";
+        // ✅ Upload success
         document.getElementById("status").innerText = data.status;
-        document.getElementById("timestamp").innerText = data.timestamp;
-
         document.getElementById("resultBox").style.display = "block";
-        alert("✅ Interview video uploaded successfully!");
+        alert("✅ Interview video uploaded successfully! Analysis started...");
+
+        const analysisId = data.analysis_id;
+
+        // Start polling DynamoDB results
+        pollVideoResult(analysisId);
       } else {
         alert("❌ Upload failed: " + data.error);
       }
@@ -150,7 +139,46 @@
       alert("🚫 An error occurred during upload.");
     }
   }
+
+  // ✅ Define poll function outside
+  function pollVideoResult(analysisId) {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`http://13.221.21.202:5000/api/video_result?analysis_id=${analysisId}`);
+        const result = await res.json();
+
+        if (result.status === "PROCESSING") {
+          console.log("⏳ Still processing...");
+          return; // keep polling
+        }
+
+        // ✅ Populate real response data
+        document.getElementById("resumeScore").innerText = result.scores?.total_score + "%" || "N/A";
+        document.getElementById("skills").innerText = result.skills?.join(", ") || "N/A";
+        document.getElementById("transcript").innerText = result.transcript || "No transcript available";
+
+        // Detailed scores
+        let scoresHtml = "";
+        if (result.scores) {
+          for (const [key, value] of Object.entries(result.scores)) {
+            scoresHtml += `<p><strong>${key}:</strong> ${value}</p>`;
+          }
+        }
+        document.getElementById("scores").innerHTML = scoresHtml;
+
+        document.getElementById("totalScore").innerText = result.scores?.total_score + "%" || "N/A";
+        document.getElementById("status").innerText = result.status;
+        document.getElementById("timestamp").innerText = result.timestamp;
+
+        clearInterval(interval); // ✅ stop polling
+      } catch (err) {
+        console.error("Error fetching results:", err);
+      }
+    }, 5000); // poll every 5 seconds
+  }
 </script>
+
 
 </body>
 </html>
+
