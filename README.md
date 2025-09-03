@@ -39,14 +39,14 @@ This document provides an overview of the project, setup instructions, and detai
   - **resume_analyzer/**
     - | [Lambda_function_for_resume_analysis.py](./resume_analyzer_lambda_website_integrated.py) | – Main Python file for resume analysis logic  
     - `test/`
-      - `test_resume_lambda.py` – Unit tests for resume analyzer Lambda  
+      - | [test_resume_analyzer.py](./test_resume_analyzer.py) | – Unit tests for resume analyzer Lambda  
   - **interview_grader/**
     - | [video_resume_analyzer_lambda_1.py](./video_resume_lambda_1_website_integrated.py) | – Main Python file for interview video grading logic  
     - `test/`
-      - `test_video_lambda_1.py` – Unit tests for video grading Lambda
+      - | [test_video_resume_lambda_1.py](./test_video_resume_lambda_1.py) | – Unit tests for video grading Lambda
     - | [video_resume_analyzer_lambda_2.py](./video_resume_lambda_2_website_integrated.py) | – Main Python file for interview video grading logic  
       - `test/`
-        - `test_video_lambda_2.py` – Unit tests for video grading Lambda
+        - | [test_video_resume_lambda_2.py](./test_video_resume_lambda_2.py) | – Unit tests for video grading Lambda
   - | [app.py](./app.py) | – Entry point for local testing / API integration  
 
 ### Frontend
