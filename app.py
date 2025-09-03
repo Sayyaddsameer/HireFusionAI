@@ -15,6 +15,13 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('HireFusionTable')
 table_name ='ResumeAnalysisResults'  # Your second table
 
+table = dynamodb.Table('HireFusionTable')
+table_name ='ResumeAnalysisResults'
+
+# NEW table for interview analysis results
+video_analysis_table = dynamodb.Table("InterviewAnalysisResults")
+
+
 
 # S3 Configuration (Using IAM Role)
 S3 = boto3.client("s3", region_name="us-east-1")
@@ -191,43 +198,64 @@ def upload_video():
         return jsonify({"error": "No selected file"}), 400
 
     try:
-        # Upload to S3
-        unique_name = f"{uuid.uuid4().hex}_{file.filename}"
+        analysis_id = str(uuid.uuid4())
+        unique_name = f"{analysis_id}_{file.filename}"
+
+        # Upload video to S3
         s3.upload_fileobj(
             file,
             VIDEO_BUCKET,
             f"videos/{unique_name}",
-            ExtraArgs={
-                "ACL": "public-read",  # optional
-                "ContentType": file.content_type
-            }
+            ExtraArgs={"ContentType": file.content_type}
         )
         video_url = f"https://{VIDEO_BUCKET}.s3.amazonaws.com/videos/{unique_name}"
 
-        # ✅ Add structured response for Interview Grader frontend
-        response_data = {
-            "message": "Upload successful",
-            "url": video_url,
-            "resume_score": 43.69,  # mock data for now
-            "skills": ["Git", "C++", "Java", "Go", "Linux", "Cloud Computing", "GitHub", "Python", "AWS", "SQL"],
-            "transcript": "Hi, I'm Mukesh. I'm self-motivated engineering expert...",
-            "scores": {
-                "Certifications": 5,
-                "Communication Skills": "75%",
-                "Confidence Level": "50%",
-                "Content": "74.5%",
-                "Facial Expressions": "50%",
-                "Grammar": "90%",
-                "Hand Gestures": "50%",
-                "Internship": "0%",
-                "Projects": 5
-            },
-            "total_score": 43.69,
-            "status": "COMPLETED",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        # Insert into DynamoDB with PROCESSING state
+        video_analysis_table.put_item(Item={
+            "analysis_id": analysis_id,
+            "video_url": video_url,
+            "status": "PROCESSING",
+            "skills": [],
+            "transcript": "",
+            "scores": {},
+            "timestamp": int(datetime.utcnow().timestamp())
+        })
 
-        return jsonify(response_data), 200
+        return jsonify({
+            "analysis_id": analysis_id,
+            "status": "PROCESSING"
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+from decimal import Decimal
+
+def decimal_to_float(obj):
+    """Helper to convert DynamoDB Decimal types to float"""
+    if isinstance(obj, list):
+        return [decimal_to_float(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: decimal_to_float(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        return float(obj)
+    return obj
+
+@app.route("/api/video_result", methods=["GET"])
+def video_result():
+    analysis_id = request.args.get("analysis_id")
+    if not analysis_id:
+        return jsonify({"error": "Missing analysis_id"}), 400
+
+    try:
+        resp = video_analysis_table.get_item(Key={"analysis_id": analysis_id})
+        item = resp.get("Item")
+        if not item:
+            return jsonify({"error": "Analysis not found"}), 404
+
+        return jsonify(decimal_to_float(item)), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -306,3 +334,4 @@ def user_details():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
+
